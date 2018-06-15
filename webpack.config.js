@@ -66,7 +66,7 @@ const assets = () => () => ({
 
 const resolveModules = modules => () => ({
   resolve: {
-    modules: [].concat(modules, ['node_modules']),
+    modules: [].concat(modules, [path.resolve(__dirname,'node_modules')]),
   },
 })
 
