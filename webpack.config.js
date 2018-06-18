@@ -9,7 +9,7 @@ const AssetsByTypePlugin = require('webpack-assets-by-type-plugin')
 const ChildConfigPlugin = require('webpack-child-config-plugin')
 const SpawnPlugin = require('webpack-spawn-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-
+const autoprefixer = require('autoprefixer')
 const {
   addPlugins, createConfig, entryPoint, env, setOutput,
   sourceMaps, defineConstants, webpack, group,
@@ -52,9 +52,6 @@ const assets = () => () => ({
               }
             }, */
             {
-              loader:'style-loader',
-            },
-            {
               loader: 'css-loader',
               options: {
                 camelCase: true,
@@ -63,13 +60,19 @@ const assets = () => () => ({
                 importLoaders: 3
               }
             },
-/*             {
+            {
               loader: 'postcss-loader',
               options:{
                 sourceMap: true,
-                options: {},
+                plugins: [
+                  autoprefixer
+                ],
+                options: {
+                  parser: 'sugarss',
+                  autoprefixer: true
+                },
               }
-            }, */
+            },
             {
               loader: 'sass-loader',
               options: {
