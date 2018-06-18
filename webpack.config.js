@@ -35,13 +35,15 @@ const babel = () => () => ({
     ],
   },
 })
-console.log(path.resolve(__dirname,'node_modules/'));
+
 const assets = () => () => ({
   module: {
     rules: [
       { test: /\.(png|jpe?g|svg|woff2?|ttf|eot)$/, loader: 'url-loader?limit=8000' },
       { test: /\.(s(a|c)ss)$/,
+        exclude: '/node_modules/',
         use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
           use: [
 /*             {
               loader:'autoprefixer-loader',
@@ -49,11 +51,30 @@ const assets = () => () => ({
                 browsers:['last 2 version','ie >= 9', 'Android >= 2.3', 'ios >= 7']
               }
             }, */
-            'style-loader',
-            'css-loader',
+            {
+              loader:'style-loader',
+            },
+            {
+              loader: 'css-loader',
+              options: {
+                camelCase: true,
+                modules: true,
+                sourceMap: true,
+                importLoaders: 3
+              }
+            },
+/*             {
+              loader: 'postcss-loader',
+              options:{
+                sourceMap: true,
+                options: {},
+              }
+            }, */
             {
               loader: 'sass-loader',
               options: {
+                sourceMap: true,
+                outputStyle: 'expanded',
                 includePaths: [path.resolve(__dirname,'node_modules')]
               }
             },
@@ -66,7 +87,7 @@ const assets = () => () => ({
 
 const resolveModules = modules => () => ({
   resolve: {
-    modules: [].concat(modules, [path.resolve(__dirname,'node_modules')]),
+    modules: [].concat([modules,path.resolve(__dirname,'node_modules')]),
   },
 })
 

@@ -74,6 +74,7 @@
     "mini-css-extract-plugin": "^0.4.0",
     "node-sass": "^4.9.0",
     "opn-cli": "^3.1.0",
+    "postcss-loader": "^2.1.5",
     "pug-as-jsx-loader": "^1.0.41",
     "raw-loader": "^0.5.1",
     "react-test-renderer": "^16.0.0",
@@ -95,7 +96,7 @@
   "dependencies": {
     "babel-polyfill": "^6.20.0",
     "express": "^4.16.2",
-    "foundation-sites": "^6.4.4-rc1",
+    "foundation-sites": "^6.4.3",
     "history": "^4.6.1",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
@@ -117,7 +118,7 @@
     "redux-saga-thunk": "^0.5.0",
     "serialize-javascript": "^1.3.0",
     "simple-load-script": "^1.0.2",
-    "styled-components": "^3.0.2",
+    "styled-components": "^3.3.2",
     "styled-theme": "^0.3.0",
     "styled-tools": "^0.4.0",
     "validator": "^9.0.0"
