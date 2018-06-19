@@ -76,6 +76,7 @@
     "opn-cli": "^3.1.0",
     "postcss-loader": "^2.1.5",
     "pug-as-jsx-loader": "^1.0.41",
+    "q-i": "^2.0.1",
     "raw-loader": "^0.5.1",
     "react-test-renderer": "^16.0.0",
     "redux-mock-store": "^1.2.3",

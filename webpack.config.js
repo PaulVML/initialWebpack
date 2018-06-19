@@ -15,6 +15,7 @@ const {
   sourceMaps, defineConstants, webpack, group,
 } = require('@webpack-blocks/webpack2')
 
+const { print } = require('q-i');
 const host = process.env.HOST || 'localhost'
 const port = (+process.env.PORT + 1) || 3001
 const sourceDir = process.env.SOURCE || 'src'
@@ -27,6 +28,9 @@ const cssEntryPath = path.join(sourcePath, 'styles/styles.scss')
 const serverEntryPath = path.join(sourcePath, 'server.js')
 const devDomain = `http://${host}:${port}/`
 
+const entryPoints = { client: clientEntryPath, styles: cssEntryPath };
+
+
 const babel = () => () => ({
   module: {
     rules: [
@@ -35,6 +39,39 @@ const babel = () => () => ({
     ],
   },
 })
+const sassLoaders = [
+  {
+    loader: 'css-loader',
+    options: {
+/*       camelCase: true,
+      modules: true, */
+      modules: false,
+      sourceMap: true,
+      importLoaders: 3
+    }
+  },
+  {
+    loader: 'postcss-loader',
+    options:{
+      sourceMap: true,
+      plugins: [
+        autoprefixer
+      ],
+      options: {
+        parser: 'sugarss',
+        autoprefixer: true
+      },
+    }
+  },
+  {
+    loader: 'sass-loader',
+    options: {
+      sourceMap: true,
+      outputStyle: 'expanded',
+      includePaths: [path.resolve(__dirname,'node_modules')]
+    }
+  },
+];
 
 const assets = () => () => ({
   module: {
@@ -43,58 +80,31 @@ const assets = () => () => ({
       { test: /\.(s(a|c)ss)$/,
         exclude: '/node_modules/',
         use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-/*             {
-              loader:'autoprefixer-loader',
-              options:{
-                browsers:['last 2 version','ie >= 9', 'Android >= 2.3', 'ios >= 7']
-              }
-            }, */
-            {
-              loader: 'css-loader',
-              options: {
-                camelCase: true,
-                modules: true,
-                sourceMap: true,
-                importLoaders: 3
-              }
-            },
-            {
-              loader: 'postcss-loader',
-              options:{
-                sourceMap: true,
-                plugins: [
-                  autoprefixer
-                ],
-                options: {
-                  parser: 'sugarss',
-                  autoprefixer: true
-                },
-              }
-            },
-            {
-              loader: 'sass-loader',
-              options: {
-                sourceMap: true,
-                outputStyle: 'expanded',
-                includePaths: [path.resolve(__dirname,'node_modules')]
-              }
-            },
-          ]
+          // fallback: 'style-loader',
+          use: sassLoaders,
         })
       },
     ],
   },
 })
-
+const storyBookAssets = () => () => ({
+  module: {
+    rules: [
+      { test: /\.(png|jpe?g|svg|woff2?|ttf|eot)$/, loader: 'url-loader?limit=8000' },
+      { test: /\.(s(a|c)ss)$/,
+        exclude: '/node_modules/',
+        use:  sassLoaders,
+      },
+    ]
+  }
+})
 const resolveModules = modules => () => ({
   resolve: {
     modules: [].concat([modules,path.resolve(__dirname,'node_modules')]),
   },
 })
 
-const base = () => group([
+const initialBase = () => group([
   setOutput({
     filename: '[name].js',
     path: outputPath,
@@ -111,11 +121,10 @@ const base = () => group([
       allChunks: true
     }),
   ]),
-  babel(),
-  // happypack([
-  //   babel(),
-  // ]),
-  assets(),
+  // babel(),
+  happypack([
+    babel(),
+  ]),
   resolveModules(sourceDir),
 
   env('development', [
@@ -124,6 +133,16 @@ const base = () => group([
     }),
   ]),
 ])
+
+const base = () => group([
+  initialBase(),
+  assets(),
+]);
+
+const storybookBase = () => group([
+  initialBase(),
+  storyBookAssets(),
+]);
 
 const server = createConfig([
   base(),
@@ -157,7 +176,7 @@ const server = createConfig([
 
 const client = createConfig([
   base(),
-  entryPoint({ client: clientEntryPath, styles: cssEntryPath }),
+  entryPoint(entryPoints),
   addPlugins([
     new AssetsByTypePlugin({ path: assetsPath }),
     new ChildConfigPlugin(server),
@@ -185,5 +204,12 @@ const client = createConfig([
     ]),
   ]),
 ])
-
-module.exports = client
+const storybook = createConfig([
+  storybookBase(),
+  entryPoint(entryPoints),
+  addPlugins([
+    new AssetsByTypePlugin({path: assetsPath})
+  ]),
+]);
+print(client);
+module.exports = {default: client,base: base, babel: babel, storybook: storybook}

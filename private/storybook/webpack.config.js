@@ -1,14 +1,20 @@
-const baseConfig = require('../../webpack.config')
+const parentConfig = require('../../webpack.config');
+const { print } =require('q-i');
 
-module.exports = storybookBaseConfig =>
-  Object.assign({}, storybookBaseConfig, {
-    entry: Object.assign({}, storybookBaseConfig.entry, {
-      preview: ['babel-polyfill'].concat(storybookBaseConfig.entry.preview),
+module.exports = (baseConfig,env, defaultConfig) =>{
+  let configObj = Object.assign({}, defaultConfig, {
+    entry: Object.assign({}, defaultConfig.entry, {
+      preview: ['babel-polyfill'].concat(defaultConfig.entry.preview),
+      styles: parentConfig.storybook.entry.styles
     }),
-    resolve: Object.assign({}, storybookBaseConfig.resolve, {
-      modules: baseConfig.resolve.modules,
+    resolve: Object.assign({}, defaultConfig.resolve, {
+      modules: parentConfig.storybook.resolve.modules,
     }),
-    module: Object.assign({}, storybookBaseConfig.module, {
-      rules: storybookBaseConfig.module.rules.concat(baseConfig.module.rules.slice(1)),
+    module: Object.assign({}, defaultConfig.module, {
+      rules: defaultConfig.module.rules.concat(parentConfig.storybook.module.rules.slice(1)),
     }),
-  })
+    plugins: defaultConfig.plugins.concat(parentConfig.storybook.plugins),
+  });
+  print(configObj);
+  return configObj;
+}

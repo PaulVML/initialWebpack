@@ -1,8 +1,9 @@
 // https://github.com/diegohaz/arc/wiki/Atomic-Design
 import React from 'react'
 import { Heading } from 'components/atoms'
-const Test = require("components/atoms/Test/test.pug");
-console.log(Test);
+import Test from 'components/atoms/Test/test.pug';
+
+let t = Test;
 const HomePage = () => {
   return (
     <div>
